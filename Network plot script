@@ -1,0 +1,42 @@
+library(igraph)
+library(tidyverse)
+df <- read_excel("list.xlsx")
+df$gene <- as.factor(df$Gene)
+df$Diseases <- as.factor(df$Diseases)
+
+top_Diseases <- df %>%
+  count(Diseases, sort = TRUE) %>%
+  slice_max(n, n = 100, with_ties = FALSE) %>%
+  pull(Diseases)
+
+
+# Filter the data to include only these top miRNAs
+filtered_data <- df %>%
+  filter(Diseases %in% top_Diseases)
+
+
+edges <- filtered_data %>% 
+  rename(from = `Gene`, to = Diseases)
+
+# Remove any potential duplicate edges
+edges <- unique(edges)
+
+# Create a graph from the data frame
+g <- graph_from_data_frame(d=edges, directed=FALSE)
+
+# Define the list of gene names to color blue
+blue.genes <- c("PRKDC", "PRKCZ", "HGS", "MET", "PTK2" )  
+
+V(g)$color <- ifelse(V(g)$name %in% blue.genes, "lightblue", "salmon")
+
+par(mar = c(20, 12, 12, 8) + 0.1)
+
+png("network_plot5.png", width = 4200, height = 4000)
+
+edge.width <- 1
+
+# Create the plot
+plot(g, vertex.label.color = "black", vertex.size = 8, edge.arrow.size = 0.8, vertex.label.cex = 4, layout = layout_with_fr(g, niter = 100000))
+
+# Close the device
+dev.off()
