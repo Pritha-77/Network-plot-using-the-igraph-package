@@ -1,4 +1,5 @@
 Gene–Disease Network Visualization
+
 This repository contains an R workflow for building and visualizing gene–disease interaction networks using the igraph package.
 The workflow highlights the most frequent diseases associated with genes and allows customization of specific genes (e.g., highlighting in blue).
 ________________________________________
